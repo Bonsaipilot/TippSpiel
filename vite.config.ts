@@ -4,6 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  server: {
+    port: 5174,
+    strictPort: true,
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -14,8 +18,8 @@ export default defineConfig({
         name: 'WM 2026 Tippspiel',
         short_name: 'Tippspiel',
         description: 'Familien-Tippspiel zur FIFA WM 2026',
-        theme_color: '#1a1a2e',
-        background_color: '#1a1a2e',
+        theme_color: '#1e293b',
+        background_color: '#1e293b',
         display: 'standalone',
         orientation: 'portrait',
         lang: 'de',

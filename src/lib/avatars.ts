@@ -1,0 +1,294 @@
+const BASE = 'https://api.dicebear.com/9.x'
+const uri = (svg: string) => `data:image/svg+xml,${encodeURIComponent(svg)}`
+
+// ── Smiley: yellow round emoji face ─────────────────────────────────────────
+const smiley = (bg: string, face: string) => uri(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">` +
+  `<rect width="100" height="100" fill="${bg}"/>` +
+  `<circle cx="50" cy="50" r="38" fill="#FFD700"/>` +
+  `<circle cx="40" cy="38" r="22" fill="#FFE44D" opacity="0.35"/>` +
+  face + `</svg>`
+)
+
+// ── Robot: white head on blue background ────────────────────────────────────
+const robot = (bg: string, face: string) => uri(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">` +
+  `<rect width="100" height="100" fill="${bg}"/>` +
+  face + `</svg>`
+)
+
+// ── Squid Game mask ──────────────────────────────────────────────────────────
+const squid = (bg: string, symbol: string) => uri(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">` +
+  `<rect width="100" height="100" fill="${bg}"/>` +
+  `<ellipse cx="50" cy="55" rx="30" ry="36" fill="#f0f0f0"/>` +
+  `<rect x="30" y="47" width="40" height="12" rx="6" fill="#1a1a1a"/>` +
+  symbol + `</svg>`
+)
+const sqC = `<circle cx="50" cy="30" r="9" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>`
+const sqT = `<polygon points="50,20 64,41 36,41" fill="none" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round"/>`
+const sqS = `<rect x="39" y="20" width="22" height="22" rx="1.5" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>`
+
+export interface AvatarOption { id: string; url: string }
+
+export const AVATARS: AvatarOption[] = [
+
+  // ── 😄 Smileys ── 20 ─────────────────────────────────────────────────────
+
+  // 1 Happy
+  { id: 's1', url: smiley('#ffd6e0',
+    `<circle cx="37" cy="43" r="4" fill="#333"/><circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<path d="M34,61 Q50,75 66,61" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 2 Big grin (teeth)
+  { id: 's2', url: smiley('#ffe4a0',
+    `<path d="M31,41 Q37,35 43,41" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M57,41 Q63,35 69,41" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M30,59 Q50,74 70,59 L70,66 Q50,72 30,66Z" fill="white" stroke="#333" stroke-width="2"/>`) },
+
+  // 3 Angel (halo)
+  { id: 's3', url: smiley('#d4f7ff',
+    `<circle cx="37" cy="43" r="4" fill="#333"/><circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<path d="M34,61 Q50,75 66,61" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<ellipse cx="50" cy="11" rx="18" ry="4" fill="none" stroke="#ffe066" stroke-width="3"/>`) },
+
+  // 4 Heart eyes
+  { id: 's4', url: smiley('#ffe4e8',
+    `<path d="M34,47 Q33,41 37,39 Q41,37 43,41 Q45,37 49,39 Q53,41 52,47 L43,54Z" fill="#e53935"/>` +
+    `<path d="M47,47 Q46,41 50,39 Q54,37 56,41 Q58,37 62,39 Q66,41 65,47 L56,54Z" fill="#e53935"/>` +
+    `<path d="M34,63 Q50,75 66,63" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 5 Wink + kiss
+  { id: 's5', url: smiley('#ffe0f0',
+    `<path d="M31,43 Q37,37 43,43" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<circle cx="50" cy="63" r="7" fill="#ff8fa3"/>` +
+    `<path d="M64,28 Q65,25 68,25 Q71,25 72,28 Q71,31 68,34Z" fill="#e53935"/>`) },
+
+  // 6 Wink + tongue
+  { id: 's6', url: smiley('#fff0c0',
+    `<path d="M31,43 Q37,37 43,43" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<path d="M38,60 Q50,70 62,60" stroke="#333" stroke-width="2" fill="#ff8fa3"/>` +
+    `<ellipse cx="50" cy="67" rx="8" ry="6" fill="#ff8fa3"/>`) },
+
+  // 7 Starstruck
+  { id: 's7', url: smiley('#e8f4ff',
+    `<path d="M37,37 L38.5,42 L43,42 L39.5,45 L41,49.5 L37,47 L33,49.5 L34.5,45 L31,42 L35.5,42Z" fill="#FFB300"/>` +
+    `<path d="M63,37 L64.5,42 L69,42 L65.5,45 L67,49.5 L63,47 L59,49.5 L60.5,45 L57,42 L61.5,42Z" fill="#FFB300"/>` +
+    `<path d="M34,62 Q50,74 66,62" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 8 Expressionless
+  { id: 's8', url: smiley('#e8e8f0',
+    `<rect x="31" y="41" width="13" height="5" rx="2.5" fill="#333"/>` +
+    `<rect x="56" y="41" width="13" height="5" rx="2.5" fill="#333"/>` +
+    `<line x1="36" y1="63" x2="64" y2="63" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 9 Laughing tears
+  { id: 's9', url: smiley('#c8f7e4',
+    `<path d="M31,41 Q37,34 43,41" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M57,41 Q63,34 69,41" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M30,58 Q50,76 70,58 L62,66 Q50,70 38,66Z" fill="#333"/>` +
+    `<ellipse cx="28" cy="52" rx="3" ry="6" fill="#69b4ff"/>` +
+    `<ellipse cx="72" cy="52" rx="3" ry="6" fill="#69b4ff"/>`) },
+
+  // 10 Nervous / sweat drop
+  { id: 's10', url: smiley('#fff9c0',
+    `<circle cx="37" cy="43" r="4" fill="#333"/><circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<path d="M34,61 Q50,75 66,61" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M75,26 Q77,21 79,26 Q79,32 77,32 Q75,32 75,26Z" fill="#69b4ff"/>`) },
+
+  // 11 In love (floating hearts)
+  { id: 's11', url: smiley('#ffe4f4',
+    `<path d="M31,41 Q37,35 43,41" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M57,41 Q63,35 69,41" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M34,61 Q50,73 66,61" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M17,27 Q17,23 20,23 Q23,23 23,26 Q23,23 26,23 Q29,23 29,27 L23,33Z" fill="#e53935"/>` +
+    `<path d="M72,19 Q72,16 74.5,16 Q77,16 77,19 Q77,16 79.5,16 Q82,16 82,19 L77,24Z" fill="#e53935"/>`) },
+
+  // 12 X eyes + tongue
+  { id: 's12', url: smiley('#f0e0ff',
+    `<line x1="31" y1="38" x2="43" y2="48" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<line x1="43" y1="38" x2="31" y2="48" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<line x1="57" y1="38" x2="69" y2="48" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<line x1="69" y1="38" x2="57" y2="48" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M36,61 Q50,71 64,61" stroke="#333" stroke-width="2" fill="#ff8fa3"/>` +
+    `<ellipse cx="50" cy="68" rx="9" ry="6" fill="#ff8fa3"/>`) },
+
+  // 13 Smirk
+  { id: 's13', url: smiley('#e0f4e0',
+    `<circle cx="37" cy="43" r="4" fill="#333"/><circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<path d="M31,35 Q37,31 43,33" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>` +
+    `<path d="M40,63 Q54,72 65,61" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 14 Sleepy (zzz)
+  { id: 's14', url: smiley('#e8e0f8',
+    `<path d="M31,47 Q37,41 43,47" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M57,47 Q63,41 69,47" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M34,61 Q50,73 66,61" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<text x="64" y="29" font-family="sans-serif" font-size="11" fill="#aaa" font-weight="bold">z</text>` +
+    `<text x="70" y="21" font-family="sans-serif" font-size="9" fill="#bbb" font-weight="bold">z</text>`) },
+
+  // 15 Crying
+  { id: 's15', url: smiley('#ddeeff',
+    `<circle cx="37" cy="43" r="4" fill="#333"/><circle cx="63" cy="43" r="4" fill="#333"/>` +
+    `<path d="M34,68 Q50,58 66,68" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="M37,48 Q35,55 38,60" fill="none" stroke="#69b4ff" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 16 Angry
+  { id: 's16', url: smiley('#ffe0e0',
+    `<line x1="30" y1="35" x2="43" y2="42" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<line x1="70" y1="35" x2="57" y2="42" stroke="#333" stroke-width="3" stroke-linecap="round"/>` +
+    `<circle cx="37" cy="45" r="4" fill="#333"/><circle cx="63" cy="45" r="4" fill="#333"/>` +
+    `<path d="M34,66 Q50,57 66,66" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 17 Nerd (glasses)
+  { id: 's17', url: smiley('#f0f4e8',
+    `<circle cx="37" cy="44" r="9" fill="white" stroke="#333" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="44" r="9" fill="white" stroke="#333" stroke-width="2.5"/>` +
+    `<line x1="46" y1="44" x2="54" y2="44" stroke="#333" stroke-width="2"/>` +
+    `<line x1="19" y1="42" x2="28" y2="44" stroke="#333" stroke-width="2"/>` +
+    `<line x1="81" y1="42" x2="72" y2="44" stroke="#333" stroke-width="2"/>` +
+    `<circle cx="37" cy="44" r="4" fill="#333"/><circle cx="63" cy="44" r="4" fill="#333"/>` +
+    `<path d="M38,63 Q50,71 62,63 L60,67 Q50,70 40,67Z" fill="white" stroke="#333" stroke-width="1.5"/>`) },
+
+  // 18 Cool (sunglasses)
+  { id: 's18', url: smiley('#e0f0ff',
+    `<rect x="22" y="37" width="22" height="14" rx="5" fill="#1a1a1a"/>` +
+    `<rect x="56" y="37" width="22" height="14" rx="5" fill="#1a1a1a"/>` +
+    `<line x1="44" y1="44" x2="56" y2="44" stroke="#1a1a1a" stroke-width="2.5"/>` +
+    `<path d="M34,62 Q50,74 66,62" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // 19 Surprised (O-mouth)
+  { id: 's19', url: smiley('#fff4e0',
+    `<circle cx="37" cy="42" r="6" fill="#333"/><circle cx="36" cy="40" r="2.5" fill="white"/>` +
+    `<circle cx="63" cy="42" r="6" fill="#333"/><circle cx="62" cy="40" r="2.5" fill="white"/>` +
+    `<ellipse cx="50" cy="64" rx="8" ry="9" fill="#333"/>`) },
+
+  // 20 Eye roll
+  { id: 's20', url: smiley('#f0e8ff',
+    `<circle cx="37" cy="44" r="6" fill="white" stroke="#333" stroke-width="1.5"/>` +
+    `<circle cx="37" cy="40" r="3.5" fill="#333"/>` +
+    `<circle cx="63" cy="44" r="6" fill="white" stroke="#333" stroke-width="1.5"/>` +
+    `<circle cx="63" cy="40" r="3.5" fill="#333"/>` +
+    `<line x1="36" y1="63" x2="64" y2="63" stroke="#333" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // ── 🤖 Roboter ── 10 ─────────────────────────────────────────────────────
+
+  { id: 'r1', url: robot('#2a4494',
+    `<line x1="37" y1="14" x2="37" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="37" cy="11" r="4.5" fill="white"/>` +
+    `<line x1="63" y1="14" x2="63" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="11" r="4.5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<circle cx="37" cy="49" r="8" fill="#2a4494"/><circle cx="37" cy="49" r="4" fill="white"/>` +
+    `<circle cx="63" cy="49" r="8" fill="#2a4494"/><circle cx="63" cy="49" r="4" fill="white"/>` +
+    `<path d="M36,65 Q50,75 64,65" fill="none" stroke="#2a4494" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r2', url: robot('#1e3a8a',
+    `<line x1="37" y1="14" x2="37" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="37" cy="11" r="4.5" fill="white"/>` +
+    `<line x1="63" y1="14" x2="63" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="11" r="4.5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<rect x="24" y="44" width="52" height="12" rx="6" fill="#1e3a8a"/>` +
+    `<path d="M34,66 Q50,76 66,66" fill="none" stroke="#1e3a8a" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r3', url: robot('#2563eb',
+    `<line x1="50" y1="10" x2="50" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="50" cy="7" r="5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<path d="M29,52 Q37,42 45,52" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>` +
+    `<path d="M55,52 Q63,42 71,52" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>` +
+    `<path d="M28,65 Q50,80 72,65" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r4', url: robot('#1d4ed8',
+    `<line x1="35" y1="13" x2="35" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="35" cy="10" r="5" fill="white"/>` +
+    `<line x1="65" y1="13" x2="65" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="65" cy="10" r="5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<circle cx="32" cy="49" r="5.5" fill="#1d4ed8"/>` +
+    `<circle cx="50" cy="49" r="5.5" fill="#1d4ed8"/>` +
+    `<circle cx="68" cy="49" r="5.5" fill="#1d4ed8"/>` +
+    `<path d="M34,65 Q50,75 66,65" fill="none" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r5', url: robot('#3b5bdb',
+    `<line x1="50" y1="11" x2="50" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<path d="M50,3 L51.5,8 L56,8 L52.5,11 L54,16 L50,13 L46,16 L47.5,11 L44,8 L48.5,8Z" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<circle cx="37" cy="49" r="6.5" fill="#3b5bdb"/>` +
+    `<circle cx="63" cy="49" r="6.5" fill="#3b5bdb"/>` +
+    `<path d="M40,65 Q53,74 65,63" fill="none" stroke="#3b5bdb" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r6', url: robot('#1a3a6a',
+    `<line x1="37" y1="14" x2="37" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="37" cy="11" r="4.5" fill="white"/>` +
+    `<line x1="63" y1="14" x2="63" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="11" r="4.5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<rect x="27" y="42" width="18" height="14" rx="4" fill="#1a3a6a"/>` +
+    `<rect x="55" y="42" width="18" height="14" rx="4" fill="#1a3a6a"/>` +
+    `<path d="M34,66 Q50,76 66,66" fill="none" stroke="#1a3a6a" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r7', url: robot('#264aa0',
+    `<line x1="37" y1="14" x2="37" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="37" cy="11" r="4.5" fill="white"/>` +
+    `<line x1="63" y1="14" x2="63" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="11" r="4.5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<rect x="22" y="43" width="56" height="12" rx="6" fill="#264aa0"/>` +
+    `<line x1="36" y1="67" x2="64" y2="67" stroke="#264aa0" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r8', url: robot('#2146aa',
+    `<line x1="62" y1="12" x2="62" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="62" cy="9" r="5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<circle cx="37" cy="49" r="7" fill="#2146aa"/><circle cx="36" cy="47" r="2.5" fill="white"/>` +
+    `<circle cx="63" cy="49" r="7" fill="#2146aa"/><circle cx="62" cy="47" r="2.5" fill="white"/>` +
+    `<path d="M34,65 Q50,75 66,65" fill="none" stroke="#2146aa" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r9', url: robot('#2d5a9c',
+    `<line x1="37" y1="14" x2="37" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="37" cy="11" r="4.5" fill="white"/>` +
+    `<line x1="63" y1="14" x2="63" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="11" r="4.5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<ellipse cx="37" cy="49" rx="9" ry="6" fill="#2d5a9c"/>` +
+    `<ellipse cx="63" cy="49" rx="9" ry="6" fill="#2d5a9c"/>` +
+    `<path d="M32,65 Q50,78 68,65" fill="none" stroke="#2d5a9c" stroke-width="3" stroke-linecap="round"/>`) },
+
+  { id: 'r10', url: robot('#1e4bb8',
+    `<line x1="37" y1="17" x2="37" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="37" cy="14" r="3.5" fill="white"/>` +
+    `<line x1="63" y1="13" x2="63" y2="28" stroke="white" stroke-width="2.5"/>` +
+    `<circle cx="63" cy="10" r="5.5" fill="white"/>` +
+    `<rect x="18" y="28" width="64" height="54" rx="14" fill="white"/>` +
+    `<path d="M29,52 Q37,43 45,52" fill="none" stroke="#1e4bb8" stroke-width="4" stroke-linecap="round"/>` +
+    `<circle cx="63" cy="49" r="7" fill="#1e4bb8"/><circle cx="62" cy="47" r="2.5" fill="white"/>` +
+    `<path d="M34,65 Q50,75 66,65" fill="none" stroke="#1e4bb8" stroke-width="3" stroke-linecap="round"/>`) },
+
+  // ── 🧑 Menschen ── 15 (micah, Netflix-Stil) ───────────────────────────────
+  { id: 'p1',  url: `${BASE}/micah/svg?seed=Alex&backgroundColor=ffd6e0` },
+  { id: 'p2',  url: `${BASE}/micah/svg?seed=Jordan&backgroundColor=93d5ff` },
+  { id: 'p3',  url: `${BASE}/micah/svg?seed=Morgan&backgroundColor=b5ead7` },
+  { id: 'p4',  url: `${BASE}/micah/svg?seed=Riley&backgroundColor=ffe599` },
+  { id: 'p5',  url: `${BASE}/micah/svg?seed=Casey&backgroundColor=c4b5fd` },
+  { id: 'p6',  url: `${BASE}/micah/svg?seed=Quinn&backgroundColor=ffb3c1` },
+  { id: 'p7',  url: `${BASE}/micah/svg?seed=Avery&backgroundColor=a8e6cf` },
+  { id: 'p8',  url: `${BASE}/micah/svg?seed=Blake&backgroundColor=ffd3b6` },
+  { id: 'p9',  url: `${BASE}/micah/svg?seed=Cameron&backgroundColor=b6e3f4` },
+  { id: 'p10', url: `${BASE}/micah/svg?seed=Dana&backgroundColor=e8d5ff` },
+  { id: 'p11', url: `${BASE}/micah/svg?seed=Elliott&backgroundColor=fff0ba` },
+  { id: 'p12', url: `${BASE}/micah/svg?seed=Finley&backgroundColor=ffaaa5` },
+  { id: 'p13', url: `${BASE}/micah/svg?seed=Harley&backgroundColor=a8d8ea` },
+  { id: 'p14', url: `${BASE}/micah/svg?seed=Indigo&backgroundColor=caffbf` },
+  { id: 'p15', url: `${BASE}/micah/svg?seed=Jamie&backgroundColor=fcbad3` },
+
+  // ── 🦑 Squid Game ── 5 ───────────────────────────────────────────────────
+  { id: 'sq1', url: squid('#ff6b8a', sqC) },   // Pink – Kreis (Staff)
+  { id: 'sq2', url: squid('#ff8fa3', sqT) },   // Soft pink – Dreieck (Soldier)
+  { id: 'sq3', url: squid('#e91e8c', sqS) },   // Magenta – Quadrat (Manager)
+  { id: 'sq4', url: squid('#1a1a2e', sqC) },   // Dunkel – Kreis (Front Man)
+  { id: 'sq5', url: squid('#7b1fa2', sqT) },   // Lila – Dreieck (Variant)
+]
