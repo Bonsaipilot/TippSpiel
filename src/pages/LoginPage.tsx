@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     const code = searchParams.get('code')
@@ -116,8 +117,22 @@ export default function LoginPage() {
 
             <div>
               <label className="block text-sm text-slate-300 mb-1">Passwort</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••" required minLength={6} className={inputClass} />
+              <div className="relative">
+                <input
+                  type={mode === 'register' && showPassword ? 'text' : 'password'}
+                  value={password} onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••" required minLength={6}
+                  className={inputClass + ' pr-10'} />
+                {mode === 'register' && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(v => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                  >
+                    {showPassword ? 'verbergen' : 'anzeigen'}
+                  </button>
+                )}
+              </div>
             </div>
 
             {error && (
