@@ -76,7 +76,9 @@ export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved
     const v = e.target.value
     setHome(v)
     setSaved(false)
-    if (v.length === 1) awayRef.current?.focus()
+    if (v.length === 1 && awayRef.current) {
+      awayRef.current.focus({ preventScroll: true })
+    }
   }
 
   const handleAwayChange = (e: React.ChangeEvent<HTMLInputElement>) => {

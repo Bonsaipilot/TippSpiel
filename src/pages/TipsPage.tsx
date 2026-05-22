@@ -124,7 +124,13 @@ export default function TipsPage() {
                     tip={tipMap[m.id]}
                     userId={user!.id}
                     homeInputRef={getHomeRef(m.id)}
-                    onAwayDone={idx < filtered.length - 1 ? () => homeRefMap.current[filtered[idx + 1].id]?.current?.focus() : undefined}
+                    onAwayDone={idx < filtered.length - 1 ? () => {
+                      const el = homeRefMap.current[filtered[idx + 1].id]?.current
+                      if (el) {
+                        el.focus({ preventScroll: true })
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                      }
+                    } : undefined}
                     onTipDeleted={id => setTips(prev => prev.filter(t => t.match_id !== id))}
                     onTipSaved={(matchId, home, away) => setTips(prev => {
                       const idx = prev.findIndex(t => t.match_id === matchId)
