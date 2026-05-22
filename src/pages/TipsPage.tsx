@@ -12,7 +12,7 @@ export default function TipsPage() {
   const [tips, setTips] = useState<Tip[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [open, setOpen] = useState<Set<string>>(new Set())
+  const [open, setOpen] = useState<string | null>(null)
   const homeRefMap = useRef<Record<number, React.RefObject<HTMLInputElement | null>>>({})
   const getHomeRef = (id: number): React.RefObject<HTMLInputElement | null> => {
     if (!homeRefMap.current[id]) homeRefMap.current[id] = React.createRef()
@@ -82,11 +82,7 @@ export default function TipsPage() {
   const q = query.trim().toLowerCase()
 
   const toggle = (key: string) =>
-    setOpen(prev => {
-      const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
-      return next
-    })
+    setOpen(prev => prev === key ? null : key)
 
   const matchesQuery = (m: Match) =>
     !q ||
@@ -98,7 +94,7 @@ export default function TipsPage() {
       {Object.entries(grouped).map(([group, groupMatches]) => {
         const filtered = groupMatches.filter(matchesQuery)
         if (filtered.length === 0) return null
-        const isOpen = q ? true : open.has(group)
+        const isOpen = q ? true : open === group
         const tipped = groupMatches.filter(m => tipMap[m.id]).length
         const allTipped = !q && tipped === groupMatches.length && groupMatches.length > 0
         return (
