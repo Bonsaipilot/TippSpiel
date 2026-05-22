@@ -1,4 +1,3 @@
-const BASE = 'https://api.dicebear.com/9.x'
 const uri = (svg: string) => `data:image/svg+xml,${encodeURIComponent(svg)}`
 
 // ── Smiley: round emoji face, color configurable ─────────────────────────────
@@ -33,6 +32,57 @@ const sqS = `<rect x="40" y="63" width="20" height="20" rx="1.5" fill="none" str
 // Shorthands for colored smiley eye/mouth colors
 const GE = '#1d5c1d' // green face: dark feature color
 const BE = '#1a3d6e' // blue face: dark feature color
+
+// ── Menschen helpers ──────────────────────────────────────────────────────────
+const SL = '#FECBA1' // helle Haut
+const SD = '#795548' // dunkle Haut
+const human = (bg: string, skin: string, hair: string, face: string) => uri(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">` +
+  `<rect width="100" height="100" fill="${bg}"/>` +
+  `<path d="M10,100 Q10,78 50,76 Q90,78 90,100Z" fill="${skin}"/>` +
+  `<ellipse cx="50" cy="50" rx="24" ry="26" fill="${skin}"/>` +
+  `<ellipse cx="26" cy="52" rx="4" ry="6" fill="${skin}"/>` +
+  `<ellipse cx="74" cy="52" rx="4" ry="6" fill="${skin}"/>` +
+  hair + face + `</svg>`
+)
+// Hair
+const hShortDark  = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#2C1810"/>`
+const hShortBlond = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#E0C040"/>`
+const hShortBlack = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#1A1A1A"/>`
+const hShortGray  = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#9E9E9E"/>`
+const hShortRed   = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#BF4000"/>`
+const hLongBrown  = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#6B3A2A"/>` +
+  `<rect x="25" y="38" width="7" height="32" rx="3.5" fill="#6B3A2A"/>` +
+  `<rect x="68" y="38" width="7" height="32" rx="3.5" fill="#6B3A2A"/>`
+const hLongBlond  = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#E0C040"/>` +
+  `<rect x="25" y="38" width="7" height="38" rx="3.5" fill="#E0C040"/>` +
+  `<rect x="68" y="38" width="7" height="38" rx="3.5" fill="#E0C040"/>`
+const hBunBlack   = `<ellipse cx="50" cy="37" rx="24" ry="12" fill="#1A1A1A"/>` +
+  `<circle cx="50" cy="24" r="10" fill="#1A1A1A"/>`
+const hBobBrown   = `<ellipse cx="50" cy="35" rx="24" ry="12" fill="#3D2010"/>` +
+  `<rect x="25" y="38" width="7" height="18" rx="3.5" fill="#3D2010"/>` +
+  `<rect x="68" y="38" width="7" height="18" rx="3.5" fill="#3D2010"/>`
+const hPixieDark  = `<ellipse cx="50" cy="37" rx="22" ry="10" fill="#3D2010"/>`
+const hAfro       = `<ellipse cx="50" cy="30" rx="28" ry="20" fill="#1A1A1A"/>`
+const hAfroPuff   = `<ellipse cx="50" cy="38" rx="24" ry="12" fill="#1A1A1A"/>` +
+  `<circle cx="50" cy="23" r="12" fill="#1A1A1A"/>`
+// Faces
+const fHappy   = `<circle cx="42" cy="55" r="3.5" fill="#333"/><circle cx="58" cy="55" r="3.5" fill="#333"/>` +
+  `<path d="M38,66 Q50,75 62,66" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`
+const fGrin    = `<circle cx="42" cy="55" r="3.5" fill="#333"/><circle cx="58" cy="55" r="3.5" fill="#333"/>` +
+  `<path d="M38,65 Q50,76 62,65 L60,70 Q50,73 40,70Z" fill="white" stroke="#333" stroke-width="1.5"/>`
+const fWink    = `<path d="M38,53 Q42,49 46,53" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>` +
+  `<circle cx="58" cy="55" r="3.5" fill="#333"/>` +
+  `<path d="M38,66 Q50,75 62,66" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`
+const fSmirk   = `<circle cx="42" cy="55" r="3.5" fill="#333"/><circle cx="58" cy="55" r="3.5" fill="#333"/>` +
+  `<path d="M42,67 Q52,74 60,66" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`
+const fGlasses = `<circle cx="42" cy="55" r="3.5" fill="#333"/><circle cx="58" cy="55" r="3.5" fill="#333"/>` +
+  `<path d="M38,66 Q50,75 62,66" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>` +
+  `<rect x="31" y="48" width="15" height="12" rx="6" fill="none" stroke="#666" stroke-width="2.5"/>` +
+  `<rect x="54" y="48" width="15" height="12" rx="6" fill="none" stroke="#666" stroke-width="2.5"/>` +
+  `<line x1="46" y1="54" x2="54" y2="54" stroke="#666" stroke-width="2"/>` +
+  `<line x1="22" y1="54" x2="31" y2="54" stroke="#666" stroke-width="2"/>` +
+  `<line x1="69" y1="54" x2="79" y2="54" stroke="#666" stroke-width="2"/>`
 
 export interface AvatarOption { id: string; url: string }
 
@@ -327,21 +377,21 @@ export const AVATARS: AvatarOption[] = [
     `<path d="M34,65 Q50,75 66,65" fill="none" stroke="#1e4bb8" stroke-width="3" stroke-linecap="round"/>`) },
 
   // ── 🧑 Menschen ── 15 (13 hell, 2 dunkel) ────────────────────────────────
-  { id: 'p1',  url: `${BASE}/micah/svg?seed=Emma&baseColor[]=apricot&backgroundColor=ffd6e0` },
-  { id: 'p2',  url: `${BASE}/micah/svg?seed=Sophie&baseColor[]=apricot&backgroundColor=93d5ff` },
-  { id: 'p3',  url: `${BASE}/micah/svg?seed=Laura&baseColor[]=apricot&backgroundColor=b5ead7` },
-  { id: 'p4',  url: `${BASE}/micah/svg?seed=Felix&baseColor[]=apricot&backgroundColor=ffe599` },
-  { id: 'p5',  url: `${BASE}/micah/svg?seed=Tom&baseColor[]=apricot&backgroundColor=c4b5fd` },
-  { id: 'p6',  url: `${BASE}/micah/svg?seed=Lisa&baseColor[]=apricot&backgroundColor=ffb3c1` },
-  { id: 'p7',  url: `${BASE}/micah/svg?seed=Max&baseColor[]=apricot&backgroundColor=a8e6cf` },
-  { id: 'p8',  url: `${BASE}/micah/svg?seed=Anna&baseColor[]=apricot&backgroundColor=ffd3b6` },
-  { id: 'p9',  url: `${BASE}/micah/svg?seed=Julia&baseColor[]=apricot&backgroundColor=b6e3f4` },
-  { id: 'p10', url: `${BASE}/micah/svg?seed=Lukas&baseColor[]=apricot&backgroundColor=e8d5ff` },
-  { id: 'p11', url: `${BASE}/micah/svg?seed=Peter&baseColor[]=apricot&backgroundColor=fff0ba` },
-  { id: 'p12', url: `${BASE}/micah/svg?seed=Maria&baseColor[]=apricot&backgroundColor=ffaaa5` },
-  { id: 'p13', url: `${BASE}/micah/svg?seed=Klaus&baseColor[]=apricot&backgroundColor=a8d8ea` },
-  { id: 'p14', url: `${BASE}/micah/svg?seed=Kofi&baseColor[]=brown&backgroundColor=caffbf` },
-  { id: 'p15', url: `${BASE}/micah/svg?seed=Amara&baseColor[]=brown&backgroundColor=fcbad3` },
+  { id: 'p1',  url: human('#ffd6e0', SL, hLongBrown,  fHappy)   },
+  { id: 'p2',  url: human('#93d5ff', SL, hShortDark,  fHappy)   },
+  { id: 'p3',  url: human('#b5ead7', SL, hShortBlond, fWink)    },
+  { id: 'p4',  url: human('#ffe599', SL, hShortBlack, fGrin)    },
+  { id: 'p5',  url: human('#c4b5fd', SL, hLongBlond,  fHappy)   },
+  { id: 'p6',  url: human('#ffb3c1', SL, hBobBrown,   fGlasses) },
+  { id: 'p7',  url: human('#a8e6cf', SL, hShortRed,   fSmirk)   },
+  { id: 'p8',  url: human('#ffd3b6', SL, hBunBlack,   fHappy)   },
+  { id: 'p9',  url: human('#b6e3f4', SL, hShortGray,  fHappy)   },
+  { id: 'p10', url: human('#e8d5ff', SL, hShortDark,  fGrin)    },
+  { id: 'p11', url: human('#fff0ba', SL, hPixieDark,  fWink)    },
+  { id: 'p12', url: human('#ffaaa5', SL, hShortBlond, fSmirk)   },
+  { id: 'p13', url: human('#a8d8ea', SL, hBobBrown,   fHappy)   },
+  { id: 'p14', url: human('#caffbf', SD, hAfro,        fHappy)   },
+  { id: 'p15', url: human('#fcbad3', SD, hAfroPuff,    fGrin)    },
 
   // ── 🦑 Squid Game ── 5 ───────────────────────────────────────────────────
   { id: 'sq1', url: squid('#ff6b8a', sqC) },   // Pink – Kreis
