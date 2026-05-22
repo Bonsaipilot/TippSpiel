@@ -1,26 +1,31 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const STEPS = [
   {
     tabIndex: 0,
+    route: '/tipps',
     icon: '⚽',
     title: 'Tipps',
     text: 'Hier tippst du alle Spielergebnisse. Öffne eine Gruppe, gib deine Ergebnisse ein – sie werden automatisch gespeichert.',
   },
   {
     tabIndex: 1,
+    route: '/tabelle',
     icon: '📊',
     title: 'Tabelle',
     text: 'Hier siehst du die aktuellen Gruppenstandings der WM in Echtzeit.',
   },
   {
     tabIndex: 2,
+    route: '/rangliste',
     icon: '🏆',
     title: 'Rangliste',
     text: 'Hier siehst du, wer gerade vorne liegt. Dein Rang wird nach jedem abgeschlossenen Spiel aktualisiert.',
   },
   {
     tabIndex: 3,
+    route: '/profil',
     icon: '👤',
     title: 'Profil',
     text: 'Such dir zuerst ein Profilbild aus – und dann ab zu den Tipps. Viel Spaß! 🎉',
@@ -32,6 +37,7 @@ const BUBBLE_MAX_WIDTH = 280
 
 export default function OnboardingTour({ userId, numTabs }: { userId: string; numTabs: number }) {
   const storageKey = `wm2026_onboarding_${userId}`
+  const navigate = useNavigate()
   const [visible, setVisible] = useState(false)
   const [step, setStep] = useState(0)
   const [winWidth, setWinWidth] = useState(() => window.innerWidth)
@@ -51,11 +57,12 @@ export default function OnboardingTour({ userId, numTabs }: { userId: string; nu
     return () => { if (main) main.style.overflow = '' }
   }, [visible])
 
-  // Scroll to top on each step change
+  // Navigate to the tab and scroll to top on each step change
   useEffect(() => {
     if (!visible) return
+    navigate(STEPS[step].route)
     document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [step, visible])
+  }, [step, visible]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!visible) return null
 
