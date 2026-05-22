@@ -124,7 +124,15 @@ export default function TipsPage() {
                       const el = homeRefMap.current[filtered[idx + 1].id]?.current
                       if (el) {
                         el.focus({ preventScroll: true })
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        const main = document.querySelector('main')
+                        if (main) {
+                          const elRect = el.getBoundingClientRect()
+                          const mainRect = main.getBoundingClientRect()
+                          const navHeight = 72
+                          const usable = main.clientHeight - navHeight
+                          const target = main.scrollTop + (elRect.top - mainRect.top) - usable * 0.38
+                          main.scrollTo({ top: Math.max(0, target), behavior: 'smooth' })
+                        }
                       }
                     } : undefined}
                     onTipDeleted={id => setTips(prev => prev.filter(t => t.match_id !== id))}
