@@ -6,10 +6,10 @@ import { AVATARS } from '../lib/avatars'
 import type { Profile } from '../types/database'
 
 const CATEGORIES = [
-  { label: '😄 Smileys',    avatars: AVATARS.slice(0, 20) },
-  { label: '🤖 Roboter',    avatars: AVATARS.slice(20, 30) },
-  { label: '🧑 Menschen',   avatars: AVATARS.slice(30, 45) },
-  { label: '🦑 Squid Game', avatars: AVATARS.slice(45, 50) },
+  { label: '😄 Smileys',    avatars: AVATARS.slice(0, 30) },
+  { label: '🤖 Roboter',    avatars: AVATARS.slice(30, 40) },
+  { label: '🧑 Menschen',   avatars: AVATARS.slice(40, 55) },
+  { label: '🦑 Squid Game', avatars: AVATARS.slice(55, 60) },
 ]
 
 export default function ProfilePage() {
