@@ -77,10 +77,11 @@ function InviteSection() {
 }
 
 // ─── Auto-Fill (generisch für alle K.O.-Runden) ───────────────
-function AutoFillSection({ label, desc, rpc, onDone }: {
+function AutoFillSection({ label, desc, rpc, ready, onDone }: {
   label: string
   desc: string
   rpc: string
+  ready: boolean
   onDone: () => void
 }) {
   const [loading, setLoading] = useState(false)
@@ -99,13 +100,16 @@ function AutoFillSection({ label, desc, rpc, onDone }: {
     <div className="bg-slate-800 rounded-xl p-4 space-y-3">
       <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">{label}</p>
       <p className="text-slate-500 text-xs">{desc}</p>
+      {!ready && (
+        <p className="text-xs text-amber-600">Noch nicht alle Vorrundenspiele abgeschlossen.</p>
+      )}
       {msg && (
         <p className={`text-xs px-3 py-1.5 rounded-lg ${msg.startsWith('Fehler') ? 'text-red-400 bg-red-950/40' : 'text-green-400 bg-green-950/40'}`}>
           {msg}
         </p>
       )}
-      <button onClick={fill} disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+      <button onClick={fill} disabled={loading || !ready}
+        className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm font-medium py-2 rounded-lg transition-colors">
         {loading ? 'Berechne…' : `⚡ ${label} automatisch befüllen`}
       </button>
     </div>
@@ -113,11 +117,11 @@ function AutoFillSection({ label, desc, rpc, onDone }: {
 }
 
 const KO_ROUNDS = [
-  { label: 'Runde der 32', desc: 'Befüllt die Paarungen aus den Gruppenspiel-Ergebnissen.', rpc: 'fill_r32_teams' },
-  { label: 'Achtelfinale', desc: 'Befüllt die Paarungen aus den R32-Ergebnissen.', rpc: 'fill_r16_teams' },
-  { label: 'Viertelfinale', desc: 'Befüllt die Paarungen aus den Achtelfinale-Ergebnissen.', rpc: 'fill_qf_teams' },
-  { label: 'Halbfinale', desc: 'Befüllt die Paarungen aus den Viertelfinale-Ergebnissen.', rpc: 'fill_sf_teams' },
-  { label: 'Finale', desc: 'Befüllt die Paarungen aus den Halbfinale-Ergebnissen.', rpc: 'fill_final_teams' },
+  { label: 'Runde der 32',  desc: 'Befüllt die Paarungen aus den Gruppenspiel-Ergebnissen.', rpc: 'fill_r32_teams', prereq: 'group' },
+  { label: 'Achtelfinale',  desc: 'Befüllt die Paarungen aus den R32-Ergebnissen.',          rpc: 'fill_r16_teams', prereq: 'r32'   },
+  { label: 'Viertelfinale', desc: 'Befüllt die Paarungen aus den Achtelfinale-Ergebnissen.', rpc: 'fill_qf_teams',  prereq: 'r16'   },
+  { label: 'Halbfinale',    desc: 'Befüllt die Paarungen aus den Viertelfinale-Ergebnissen.',rpc: 'fill_sf_teams',  prereq: 'qf'    },
+  { label: 'Finale',        desc: 'Befüllt die Paarungen aus den Halbfinale-Ergebnissen.',   rpc: 'fill_final_teams', prereq: 'sf'  },
 ]
 
 // ─── Team-Dropdown ────────────────────────────────────────────
@@ -343,9 +347,11 @@ export default function AdminPage() {
   return (
     <div className="px-4 py-4 space-y-4">
       <InviteSection />
-      {KO_ROUNDS.map(r => (
-        <AutoFillSection key={r.rpc} label={r.label} desc={r.desc} rpc={r.rpc} onDone={load} />
-      ))}
+      {KO_ROUNDS.map(r => {
+        const prereqMatches = matches.filter(m => m.stage === r.prereq)
+        const ready = prereqMatches.length > 0 && prereqMatches.every(m => m.is_finished)
+        return <AutoFillSection key={r.rpc} label={r.label} desc={r.desc} rpc={r.rpc} ready={ready} onDone={load} />
+      })}
 
       <div className="flex rounded-lg bg-slate-700 p-1">
         {(['offen', 'beendet'] as Tab[]).map(t => (
