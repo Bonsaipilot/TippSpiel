@@ -118,6 +118,7 @@ export default function TipsPage() {
                     match={m}
                     tip={tipMap[m.id]}
                     userId={user!.id}
+                    onTipDeleted={id => setTips(prev => prev.filter(t => t.match_id !== id))}
                   />
                 ))}
               </div>
