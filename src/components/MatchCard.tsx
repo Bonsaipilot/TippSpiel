@@ -7,6 +7,7 @@ interface Props {
   tip: Tip | undefined
   userId: string
   onTipDeleted?: (matchId: number) => void
+  onTipSaved?: (matchId: number, homeScore: number, awayScore: number) => void
 }
 
 const stageLabel: Record<string, string> = {
@@ -35,7 +36,7 @@ function pointsBadge(points: number) {
   return 'bg-slate-600'
 }
 
-export default function MatchCard({ match, tip, userId, onTipDeleted }: Props) {
+export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved }: Props) {
   const isLocked = new Date(match.kickoff) <= new Date() || match.is_finished
 
   const [home, setHome] = useState<string>(tip?.home_score?.toString() ?? '')
@@ -63,7 +64,7 @@ export default function MatchCard({ match, tip, userId, onTipDeleted }: Props) {
       )
       setSaving(false)
       if (error) setError('Fehler beim Speichern.')
-      else { setSaved(true); setHasTip(true) }
+      else { setSaved(true); setHasTip(true); onTipSaved?.(match.id, h, a) }
     }, 700)
 
     return () => clearTimeout(timer)

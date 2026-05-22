@@ -119,6 +119,15 @@ export default function TipsPage() {
                     tip={tipMap[m.id]}
                     userId={user!.id}
                     onTipDeleted={id => setTips(prev => prev.filter(t => t.match_id !== id))}
+                    onTipSaved={(matchId, home, away) => setTips(prev => {
+                      const idx = prev.findIndex(t => t.match_id === matchId)
+                      if (idx >= 0) {
+                        const next = [...prev]
+                        next[idx] = { ...next[idx], home_score: home, away_score: away }
+                        return next
+                      }
+                      return [...prev, { match_id: matchId, home_score: home, away_score: away, user_id: user!.id } as Tip]
+                    })}
                   />
                 ))}
               </div>
