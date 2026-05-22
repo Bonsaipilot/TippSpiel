@@ -43,6 +43,20 @@ export default function OnboardingTour({ userId, numTabs }: { userId: string; nu
     return () => window.removeEventListener('resize', onResize)
   }, [storageKey])
 
+  // Scroll to top + block scrolling while tour is active
+  useEffect(() => {
+    if (!visible) return
+    const main = document.querySelector('main')
+    if (main) { main.scrollTo({ top: 0 }); main.style.overflow = 'hidden' }
+    return () => { if (main) main.style.overflow = '' }
+  }, [visible])
+
+  // Scroll to top on each step change
+  useEffect(() => {
+    if (!visible) return
+    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [step, visible])
+
   if (!visible) return null
 
   const cur = STEPS[step]
