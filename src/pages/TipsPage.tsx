@@ -18,6 +18,11 @@ export default function TipsPage() {
     if (!homeRefMap.current[id]) homeRefMap.current[id] = React.createRef()
     return homeRefMap.current[id]
   }
+  const sectionRefMap = useRef<Record<string, React.RefObject<HTMLElement | null>>>({})
+  const getSectionRef = (key: string): React.RefObject<HTMLElement | null> => {
+    if (!sectionRefMap.current[key]) sectionRefMap.current[key] = React.createRef()
+    return sectionRefMap.current[key]
+  }
 
   const scrollToInput = (el: HTMLElement) => {
     const navHeight = 72
@@ -45,10 +50,20 @@ export default function TipsPage() {
     })
   }, [user])
 
-  // Erstes Spiel der geöffneten Gruppe fokussieren + scrollen
+  // Geöffnete Gruppe nach oben scrollen + erstes Spiel fokussieren
   useEffect(() => {
     if (!open) return
     const timer = setTimeout(() => {
+      // Gruppenheader an den Anfang des Scroll-Bereichs bringen
+      const section = sectionRefMap.current[open]?.current
+      if (section) {
+        const main = document.querySelector('main')
+        if (main) {
+          const delta = section.getBoundingClientRect().top - main.getBoundingClientRect().top - 8
+          main.scrollBy({ top: delta, behavior: 'smooth' })
+        }
+      }
+      // Erstes Input fokussieren (ohne zusätzliches Scrollen)
       const first = matches.find(m => {
         const key = m.stage === 'group'
           ? `Gruppe ${m.group?.name ?? '?'}`
@@ -57,7 +72,7 @@ export default function TipsPage() {
       })
       if (!first) return
       const el = homeRefMap.current[first.id]?.current
-      if (el) { el.focus({ preventScroll: true }); scrollToInput(el) }
+      if (el) el.focus({ preventScroll: true })
     }, 80)
     return () => clearTimeout(timer)
   }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -122,7 +137,7 @@ export default function TipsPage() {
         const tipped = groupMatches.filter(m => tipMap[m.id]).length
         const allTipped = !q && tipped === groupMatches.length && groupMatches.length > 0
         return (
-          <section key={group}>
+          <section key={group} ref={getSectionRef(group)}>
             <button
               onClick={() => { if (!q) toggle(group) }}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left transition-colors ${
