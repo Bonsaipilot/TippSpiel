@@ -9,9 +9,10 @@ import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
 import StandingsPage from './pages/StandingsPage'
 import BottomNav from './components/BottomNav'
+import OnboardingTour from './components/OnboardingTour'
 
 function AppShell() {
-  const { isAdmin } = useAuth()
+  const { user, isAdmin } = useAuth()
   const { query, setQuery } = useSearch()
   const location = useLocation()
   const [searchOpen, setSearchOpen] = useState(false)
@@ -59,6 +60,12 @@ function AppShell() {
         </Routes>
       </main>
       <BottomNav />
+      {user && (
+        <OnboardingTour
+          userId={user.id}
+          numTabs={isAdmin ? 5 : 4}
+        />
+      )}
     </div>
   )
 }
