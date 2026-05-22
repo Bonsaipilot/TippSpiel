@@ -19,6 +19,13 @@ export default function TipsPage() {
     return homeRefMap.current[id]
   }
 
+  const scrollToInput = (el: HTMLElement) => {
+    const navHeight = 72
+    const targetFromTop = (window.innerHeight - navHeight) * 0.28
+    const delta = el.getBoundingClientRect().top - targetFromTop
+    document.querySelector('main')?.scrollBy({ top: delta, behavior: 'smooth' })
+  }
+
   useEffect(() => {
     if (!user) return
     Promise.all([
@@ -37,6 +44,23 @@ export default function TipsPage() {
       setLoading(false)
     })
   }, [user])
+
+  // Erstes Spiel der geöffneten Gruppe fokussieren + scrollen
+  useEffect(() => {
+    if (!open) return
+    const timer = setTimeout(() => {
+      const first = matches.find(m => {
+        const key = m.stage === 'group'
+          ? `Gruppe ${m.group?.name ?? '?'}`
+          : ({ r32: 'Runde der 32', r16: 'Achtelfinale', qf: 'Viertelfinale', sf: 'Halbfinale', final: 'Finale' } as Record<string, string>)[m.stage] ?? m.stage
+        return key === open
+      })
+      if (!first) return
+      const el = homeRefMap.current[first.id]?.current
+      if (el) { el.focus({ preventScroll: true }); scrollToInput(el) }
+    }, 80)
+    return () => clearTimeout(timer)
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
@@ -122,18 +146,7 @@ export default function TipsPage() {
                     homeInputRef={getHomeRef(m.id)}
                     onAwayDone={idx < filtered.length - 1 ? () => {
                       const el = homeRefMap.current[filtered[idx + 1].id]?.current
-                      if (el) {
-                        el.focus({ preventScroll: true })
-                        const main = document.querySelector('main')
-                        if (main) {
-                          const elRect = el.getBoundingClientRect()
-                          const mainRect = main.getBoundingClientRect()
-                          const navHeight = 72
-                          const usable = main.clientHeight - navHeight
-                          const target = main.scrollTop + (elRect.top - mainRect.top) - usable * 0.38
-                          main.scrollTo({ top: Math.max(0, target), behavior: 'smooth' })
-                        }
-                      }
+                      if (el) { el.focus({ preventScroll: true }); scrollToInput(el) }
                     } : undefined}
                     onTipDeleted={id => setTips(prev => prev.filter(t => t.match_id !== id))}
                     onTipSaved={(matchId, home, away) => setTips(prev => {
