@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Match, Tip } from '../types/database'
 
@@ -8,6 +8,8 @@ interface Props {
   userId: string
   onTipDeleted?: (matchId: number) => void
   onTipSaved?: (matchId: number, homeScore: number, awayScore: number) => void
+  homeInputRef?: React.RefObject<HTMLInputElement | null>
+  onAwayDone?: () => void
 }
 
 const stageLabel: Record<string, string> = {
@@ -36,7 +38,7 @@ function pointsBadge(points: number) {
   return 'bg-slate-600'
 }
 
-export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved }: Props) {
+export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved, homeInputRef, onAwayDone }: Props) {
   const isLocked = new Date(match.kickoff) <= new Date() || match.is_finished
 
   const [home, setHome] = useState<string>(tip?.home_score?.toString() ?? '')
@@ -78,8 +80,10 @@ export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved
   }
 
   const handleAwayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAway(e.target.value)
+    const v = e.target.value
+    setAway(v)
     setSaved(false)
+    if (v.length === 1) onAwayDone?.()
   }
 
   const revertTip = async () => {
@@ -123,6 +127,7 @@ export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved
           ) : (
             <div className="flex items-center gap-1.5">
               <input
+                ref={homeInputRef}
                 type="number" min={0} max={99} value={home}
                 onChange={handleHomeChange}
                 className="w-10 text-center bg-slate-700 text-white rounded-lg py-1.5 text-sm border border-slate-600 focus:outline-none focus:border-blue-500"

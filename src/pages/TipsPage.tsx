@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useSearch } from '../contexts/SearchContext'
@@ -13,6 +13,11 @@ export default function TipsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState<Set<string>>(new Set())
+  const homeRefMap = useRef<Record<number, React.RefObject<HTMLInputElement | null>>>({})
+  const getHomeRef = (id: number): React.RefObject<HTMLInputElement | null> => {
+    if (!homeRefMap.current[id]) homeRefMap.current[id] = React.createRef()
+    return homeRefMap.current[id]
+  }
 
   useEffect(() => {
     if (!user) return
@@ -112,12 +117,14 @@ export default function TipsPage() {
             </button>
             {isOpen && (
               <div className="space-y-3 mt-2">
-                {filtered.map(m => (
+                {filtered.map((m, idx) => (
                   <MatchCard
                     key={m.id}
                     match={m}
                     tip={tipMap[m.id]}
                     userId={user!.id}
+                    homeInputRef={getHomeRef(m.id)}
+                    onAwayDone={idx < filtered.length - 1 ? () => homeRefMap.current[filtered[idx + 1].id]?.current?.focus() : undefined}
                     onTipDeleted={id => setTips(prev => prev.filter(t => t.match_id !== id))}
                     onTipSaved={(matchId, home, away) => setTips(prev => {
                       const idx = prev.findIndex(t => t.match_id === matchId)
