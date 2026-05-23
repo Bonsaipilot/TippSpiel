@@ -98,10 +98,10 @@ export default function OnboardingTour({ userId, numTabs }: { userId: string; nu
           left: tabW * cur.tabIndex,
           width: tabW,
           height: NAV_HEIGHT,
-          background: 'rgba(255,255,255,0.08)',
-          borderTop: '2px solid rgba(255,255,255,0.5)',
-          borderLeft: '1px solid rgba(255,255,255,0.2)',
-          borderRight: '1px solid rgba(255,255,255,0.2)',
+          background: 'rgba(255,255,255,0.22)',
+          borderTop: '2px solid rgba(255,255,255,0.9)',
+          borderLeft: '1px solid rgba(255,255,255,0.5)',
+          borderRight: '1px solid rgba(255,255,255,0.5)',
           borderRadius: '10px 10px 0 0',
         }}
       />
