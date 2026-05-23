@@ -74,8 +74,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const dbMatch = dbMatches.find(db => {
         const timeDiff = Math.abs(new Date(db.kickoff).getTime() - apiTime)
         const sameSlot  = timeDiff < 2 * 60 * 60 * 1000
-        const homeMatch = toApiCode((db.home_team as { code: string })?.code ?? '') === homeTLA
-        const awayMatch = toApiCode((db.away_team as { code: string })?.code ?? '') === awayTLA
+        const homeMatch = toApiCode((db.home_team as unknown as { code: string })?.code ?? '') === homeTLA
+        const awayMatch = toApiCode((db.away_team as unknown as { code: string })?.code ?? '') === awayTLA
         return sameSlot && homeMatch && awayMatch
       })
 
@@ -90,6 +90,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         p_away_score: awayScore,
       })
       if (!error) updated++
+    }
+
+    // Auto-set champion when final is finished and no champion set yet
+    const { data: setting } = await supabase
+      .from('settings').select('value').eq('key', 'champion_team_id').single()
+    const championAlreadySet = setting?.value && setting.value !== '0'
+
+    if (!championAlreadySet) {
+      const { data: finalMatch } = await supabase
+        .from('matches')
+        .select('home_score, away_score, home_team:home_team_id(id), away_team:away_team_id(id)')
+        .eq('stage', 'final')
+        .eq('is_finished', true)
+        .single()
+
+      if (finalMatch && finalMatch.home_score != null && finalMatch.away_score != null
+          && finalMatch.home_score !== finalMatch.away_score) {
+        const winner = finalMatch.home_score > finalMatch.away_score
+          ? (finalMatch.home_team as unknown as { id: number } | null)
+          : (finalMatch.away_team as unknown as { id: number } | null)
+        if (winner?.id) {
+          await supabase.rpc('set_champion', { p_team_id: winner.id })
+        }
+      }
     }
 
     return res.status(200).json({

@@ -12,7 +12,7 @@ export default function LeaderboardPage() {
   useEffect(() => {
     supabase
       .from('profiles')
-      .select('*')
+      .select('*, champion_team:champion_team_id(id,name,flag,code)')
       .order('total_points', { ascending: false })
       .then(({ data }) => {
         if (data) setProfiles(data as Profile[])
@@ -57,6 +57,11 @@ export default function LeaderboardPage() {
                   {p.username}
                   {isMe && <span className="text-blue-500 text-xs ml-1">(du)</span>}
                 </span>
+                {p.champion_team && (
+                  <span className="text-lg shrink-0" title={`Weltmeister-Tipp: ${p.champion_team.name}`}>
+                    {p.champion_team.flag}
+                  </span>
+                )}
                 <span className="text-white font-bold shrink-0">{p.total_points} Pkt</span>
               </div>
             )

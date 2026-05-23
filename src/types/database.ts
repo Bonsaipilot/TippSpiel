@@ -35,6 +35,9 @@ export interface Profile {
   total_points: number
   is_admin: boolean
   created_at: string
+  champion_team_id: number | null
+  champion_points: number
+  champion_team?: { id: number; name: string; flag: string | null; code: string } | null
 }
 
 export interface Tip {

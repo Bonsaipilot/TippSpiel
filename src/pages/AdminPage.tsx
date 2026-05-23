@@ -314,6 +314,79 @@ function MatchRow({ match, onSaved, teams, bracketRule }: MatchRowProps) {
   )
 }
 
+// ─── Weltmeister ─────────────────────────────────────────────
+function ChampionSection({ teams }: { teams: Team[] }) {
+  const [currentId, setCurrentId] = useState<number | null>(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+
+  useEffect(() => {
+    supabase.from('settings').select('value').eq('key', 'champion_team_id').single()
+      .then(({ data }) => {
+        const id = data?.value ? parseInt(data.value) : 0
+        if (id) { setCurrentId(id); setSelectedId(id) }
+      })
+  }, [])
+
+  const setChampion = async () => {
+    if (!selectedId) return
+    setLoading(true); setMsg(null)
+    const { data, error } = await supabase.rpc('set_champion', { p_team_id: selectedId })
+    if (error) setMsg('Fehler: ' + error.message)
+    else { setMsg(`✓ ${data} Spieler erhalten 5 Punkte`); setCurrentId(selectedId) }
+    setLoading(false)
+  }
+
+  const resetChampion = async () => {
+    setLoading(true); setMsg(null)
+    const { error } = await supabase.rpc('reset_champion')
+    if (error) setMsg('Fehler: ' + error.message)
+    else { setMsg('↩ Weltmeister zurückgesetzt'); setCurrentId(null); setSelectedId(null) }
+    setLoading(false)
+  }
+
+  const currentTeam = teams.find(t => t.id === currentId)
+
+  return (
+    <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">🏆 Weltmeister</p>
+      {currentTeam && (
+        <div className="flex items-center gap-2 bg-green-900/30 border border-green-700/50 rounded-lg px-3 py-2">
+          <span className="text-2xl">{currentTeam.flag}</span>
+          <span className="text-green-300 font-medium text-sm">{currentTeam.name}</span>
+          <span className="text-green-500 text-xs ml-auto">Gesetzt ✓</span>
+        </div>
+      )}
+      <select
+        value={selectedId ?? ''}
+        onChange={e => setSelectedId(e.target.value ? parseInt(e.target.value) : null)}
+        className="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm border border-slate-600 focus:outline-none focus:border-blue-500"
+      >
+        <option value="">Team auswählen…</option>
+        {teams.map(t => <option key={t.id} value={t.id}>{t.flag} {t.name}</option>)}
+      </select>
+      {msg && (
+        <p className={`text-xs px-3 py-1.5 rounded-lg ${msg.startsWith('Fehler') ? 'text-red-400 bg-red-950/40' : 'text-green-400 bg-green-950/40'}`}>
+          {msg}
+        </p>
+      )}
+      <div className="flex gap-2">
+        <button onClick={setChampion} disabled={!selectedId || loading}
+          className="flex-1 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white text-xs font-medium py-2 rounded-lg transition-colors">
+          {loading ? 'Speichere…' : '✓ Weltmeister setzen + Punkte vergeben'}
+        </button>
+        {currentId && (
+          <button onClick={resetChampion} disabled={loading}
+            className="bg-red-900/40 hover:bg-red-900/70 disabled:opacity-50 text-red-400 text-xs px-3 py-2 rounded-lg transition-colors">
+            ↩
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── Hauptseite ───────────────────────────────────────────────
 type Tab = 'offen' | 'beendet'
 
@@ -354,6 +427,7 @@ export default function AdminPage() {
   return (
     <div className="px-4 py-4 space-y-4">
       <InviteSection />
+      <ChampionSection teams={teams} />
       {KO_ROUNDS.map(r => {
         const prereqMatches = matches.filter(m => m.stage === r.prereq)
         const ready = prereqMatches.length > 0 && prereqMatches.every(m => m.is_finished)

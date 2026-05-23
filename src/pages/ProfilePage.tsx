@@ -7,6 +7,13 @@ import type { Profile } from '../types/database'
 
 const SCORING_EXAMPLES = [
   {
+    pts: 5,
+    color: 'bg-yellow-500',
+    label: 'Weltmeister-Tipp',
+    desc: 'Den richtigen Weltmeister vorhergesagt.',
+    example: 'Finale endet · getipptes Team gewinnt',
+  },
+  {
     pts: 3,
     color: 'bg-green-600',
     label: 'Richtiges Ergebnis',
@@ -181,6 +188,7 @@ export default function ProfilePage() {
           </button>
         </div>
         {[
+          ['Weltmeister-Tipp', '5 Pkt'],
           ['Richtiges Ergebnis', '3 Pkt'],
           ['Richtige Tordifferenz', '2 Pkt'],
           ['Richtige Tendenz', '1 Pkt'],

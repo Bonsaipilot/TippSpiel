@@ -3,13 +3,105 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useSearch } from '../contexts/SearchContext'
 import MatchCard from '../components/MatchCard'
-import type { Match, Tip } from '../types/database'
+import type { Match, Tip, Team } from '../types/database'
+
+function ChampionCard({ userId, teams, firstKickoff }: { userId: string; teams: Team[]; firstKickoff: string | null }) {
+  const [teamQuery, setTeamQuery] = useState('')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  const isLocked = firstKickoff ? new Date(firstKickoff) <= new Date() : false
+
+  useEffect(() => {
+    supabase.from('profiles').select('champion_team_id').eq('id', userId).single()
+      .then(({ data }) => { if (data?.champion_team_id) setSelectedId(data.champion_team_id) })
+  }, [userId])
+
+  const selectTeam = async (teamId: number) => {
+    if (isLocked) return
+    setSelectedId(teamId)
+    setTeamQuery('')
+    setSaving(true); setSaved(false)
+    await supabase.from('profiles').update({ champion_team_id: teamId }).eq('id', userId)
+    setSaving(false); setSaved(true)
+  }
+
+  const selectedTeam = teams.find(t => t.id === selectedId)
+  const filtered = teamQuery
+    ? teams.filter(t => t.name.toLowerCase().includes(teamQuery.toLowerCase())).slice(0, 8)
+    : []
+
+  return (
+    <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-slate-300 text-sm font-semibold">🏆 Weltmeister-Tipp</p>
+        {isLocked && <span className="text-xs text-amber-500">Gesperrt</span>}
+      </div>
+
+      {selectedTeam && (
+        <div className="flex items-center gap-2 bg-slate-700 rounded-lg px-3 py-2">
+          <span className="text-2xl">{selectedTeam.flag}</span>
+          <span className="text-white font-medium text-sm">{selectedTeam.name}</span>
+          <span className="ml-auto text-xs">
+            {saving ? <span className="text-slate-400">Speichere…</span>
+              : saved ? <span className="text-green-400">✓ Gespeichert</span>
+              : null}
+          </span>
+        </div>
+      )}
+
+      {!isLocked && (
+        <div className="relative">
+          <input
+            type="text"
+            value={teamQuery}
+            onChange={e => setTeamQuery(e.target.value)}
+            placeholder={selectedTeam ? 'Tipp ändern – Team suchen…' : 'Team suchen…'}
+            className="w-full bg-slate-700 text-white rounded-lg px-3 py-2 text-sm placeholder:text-slate-500 border border-slate-600 focus:outline-none focus:border-blue-500"
+          />
+          {filtered.length > 0 && (
+            <div className="absolute z-10 top-full mt-1 w-full bg-slate-700 rounded-lg overflow-hidden shadow-xl border border-slate-600">
+              {filtered.map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => selectTeam(t.id)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-slate-600 transition-colors ${
+                    t.id === selectedId ? 'text-blue-300' : 'text-white'
+                  }`}
+                >
+                  <span>{t.flag}</span>
+                  <span>{t.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {teamQuery && filtered.length === 0 && (
+            <p className="text-slate-500 text-xs mt-1 px-1">Kein Team gefunden.</p>
+          )}
+        </div>
+      )}
+
+      {isLocked && !selectedTeam && (
+        <p className="text-slate-500 text-xs">Kein Tipp abgegeben.</p>
+      )}
+
+      <p className="text-slate-600 text-xs">
+        {isLocked
+          ? 'Gesperrt seit Anpfiff des ersten Spiels.'
+          : 'Richtig getippt: 5 Punkte · Wird nach dem Finale vergeben.'}
+      </p>
+    </div>
+  )
+}
 
 export default function TipsPage() {
   const { user } = useAuth()
   const { query } = useSearch()
   const [matches, setMatches] = useState<Match[]>([])
   const [tips, setTips] = useState<Tip[]>([])
+  const [teams, setTeams] = useState<Team[]>([])
+  const [firstKickoff, setFirstKickoff] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [open, setOpen] = useState<string | null>(null)
@@ -42,10 +134,21 @@ export default function TipsPage() {
         .from('tips')
         .select('*')
         .eq('user_id', user.id),
-    ]).then(([matchRes, tipRes]) => {
+      supabase
+        .from('teams')
+        .select('id,name,code,flag,group_id')
+        .order('name'),
+    ]).then(([matchRes, tipRes, teamRes]) => {
       if (matchRes.error) setError(matchRes.error.message)
-      else setMatches(matchRes.data as Match[])
+      else {
+        const allMatches = matchRes.data as Match[]
+        setMatches(allMatches)
+        const first = allMatches.reduce<string | null>((min, m) =>
+          !min || m.kickoff < min ? m.kickoff : min, null)
+        setFirstKickoff(first)
+      }
       if (!tipRes.error) setTips(tipRes.data as Tip[])
+      if (!teamRes.error) setTeams(teamRes.data as Team[])
       setLoading(false)
     })
   }, [user])
@@ -180,6 +283,10 @@ export default function TipsPage() {
           </section>
         )
       })}
+
+      {!q && teams.length > 0 && (
+        <ChampionCard userId={user!.id} teams={teams} firstKickoff={firstKickoff} />
+      )}
     </div>
   )
 }
