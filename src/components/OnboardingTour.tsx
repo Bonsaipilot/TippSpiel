@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const STEPS = [
+const STEPS: { tabIndex: number; route: string; icon: string; title: string; text: string }[] = [
   {
     tabIndex: 0,
     route: '/tipps',
@@ -28,7 +28,14 @@ const STEPS = [
     route: '/profil',
     icon: '👤',
     title: 'Profil',
-    text: 'Such dir zuerst ein Profilbild aus – und dann ab zu den Tipps. Viel Spaß! 🎉',
+    text: 'Such dir zuerst ein Profilbild aus – und dann ab zu den Tipps.',
+  },
+  {
+    tabIndex: 3,
+    route: '/profil',
+    icon: '📲',
+    title: 'App installieren',
+    text: 'Hier im Profil-Tab warten zwei Aufgaben: Such dir ein Profilbild aus – und folge der Anleitung weiter unten, um die App auf deinen Homescreen zu speichern. Los geht\'s! 🎉',
   },
 ]
 
@@ -87,24 +94,8 @@ export default function OnboardingTour({ userId, numTabs }: { userId: string; nu
 
   return (
     <div className="fixed inset-0 z-50" onClick={advance} style={{ cursor: 'pointer' }}>
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/75" />
-
-      {/* Tab highlight */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          bottom: 0,
-          left: tabW * cur.tabIndex,
-          width: tabW,
-          height: NAV_HEIGHT,
-          background: 'rgba(255,255,255,0.22)',
-          borderTop: '2px solid rgba(255,255,255,0.9)',
-          borderLeft: '1px solid rgba(255,255,255,0.5)',
-          borderRight: '1px solid rgba(255,255,255,0.5)',
-          borderRadius: '10px 10px 0 0',
-        }}
-      />
+      {/* Overlay — stops above the nav bar so it stays fully visible */}
+      <div className="absolute inset-x-0 top-0 bg-black/75" style={{ bottom: NAV_HEIGHT }} />
 
       {/* Speech bubble */}
       <div

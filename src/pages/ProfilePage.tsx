@@ -78,12 +78,24 @@ const CATEGORIES = [
   { label: '🦑 Squid Game', avatars: AVATARS.slice(55, 60) },
 ]
 
+const isStandalone = () =>
+  window.matchMedia('(display-mode: standalone)').matches ||
+  ('standalone' in navigator && (navigator as { standalone?: boolean }).standalone === true)
+
 export default function ProfilePage() {
   const { user, signOut } = useAuth()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [savingAvatar, setSavingAvatar] = useState(false)
   const [showScoring, setShowScoring] = useState(false)
+  const [showInstallHint] = useState(() => !isStandalone())
+  const [copied, setCopied] = useState(false)
+
+  const copyUrl = () => {
+    navigator.clipboard.writeText('https://tippspiel-indol.vercel.app/login')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   useEffect(() => {
     if (!user) return
@@ -180,6 +192,29 @@ export default function ProfilePage() {
         ))}
       </div>
       {showScoring && <ScoringDialog onClose={() => setShowScoring(false)} />}
+
+      {/* PWA install hint — only shown when not already installed */}
+      {showInstallHint && (
+        <div className="bg-slate-800 rounded-xl p-4 space-y-2">
+          <p className="text-slate-300 text-sm font-semibold">📲 App auf dem Homescreen speichern</p>
+          <p className="text-slate-400 text-xs leading-relaxed">So geht's auf dem iPhone:</p>
+          <ol className="space-y-2 text-xs text-slate-400">
+            <li>
+              <span className="text-slate-300 font-medium">1.</span> Öffne diese Seite in <span className="text-slate-300 font-medium">Safari</span> (nicht Chrome)
+              <div className="flex items-center gap-2 mt-1.5 bg-slate-700 rounded-lg px-2.5 py-1.5">
+                <span className="text-slate-400 truncate flex-1 font-mono text-xs">tippspiel-indol.vercel.app/login</span>
+                <button onClick={copyUrl} className="text-blue-400 hover:text-blue-300 font-medium shrink-0 transition-colors">
+                  {copied ? '✓ Kopiert' : 'Kopieren'}
+                </button>
+              </div>
+            </li>
+            <li><span className="text-slate-300 font-medium">2.</span> Tippe in der Adressleiste auf den runden Button <span className="text-slate-300 font-medium">( ··· )</span></li>
+            <li><span className="text-slate-300 font-medium">3.</span> Tippe auf das <span className="text-slate-300 font-medium">Teilen-Symbol</span> (Kästchen mit Pfeil ↑)</li>
+            <li><span className="text-slate-300 font-medium">4.</span> Scrolle im Popup leicht nach unten und tippe auf <span className="text-slate-300 font-medium">„Zum Home-Bildschirm hinzufügen"</span></li>
+            <li><span className="text-slate-300 font-medium">5.</span> Tippe auf <span className="text-slate-300 font-medium">„Hinzufügen"</span> – fertig! 🎉</li>
+          </ol>
+        </div>
+      )}
 
       <button
         onClick={signOut}

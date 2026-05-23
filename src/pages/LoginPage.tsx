@@ -24,7 +24,7 @@ export default function LoginPage() {
     }
   }, [searchParams])
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault()
     setError(null)
     setInfo(null)
@@ -53,15 +53,12 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: { username: username.trim() },
-          emailRedirectTo: window.location.origin,
-        },
+        options: { data: { username: username.trim() } },
       })
       if (error) {
         setError(error.message)
       } else {
-        setInfo('Fast geschafft! Bitte bestätige deine E-Mail und melde dich dann an.')
+        setInfo('Willkommen! 🎉 Konto erstellt – du wirst gleich weitergeleitet.')
       }
     }
 
