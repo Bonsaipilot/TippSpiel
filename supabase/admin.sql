@@ -34,6 +34,33 @@ end;
 $$;
 
 -- ============================================================
+-- Spielergebnis zurücksetzen (Admin-Korrektur)
+-- Setzt is_finished=false, löscht Scores + alle Tipppunkte
+-- ============================================================
+create or replace function reset_match(p_match_id int)
+returns text language plpgsql security definer as $$
+begin
+  -- Tipppunkte zurücksetzen
+  update tips set points = null where match_id = p_match_id;
+
+  -- Gesamtpunkte aller betroffenen Spieler neu berechnen
+  update profiles p
+  set total_points = (
+    select coalesce(sum(points), 0) from tips
+    where user_id = p.id and points is not null
+  )
+  where id in (select user_id from tips where match_id = p_match_id);
+
+  -- Spiel zurücksetzen
+  update matches
+  set is_finished = false, home_score = null, away_score = null
+  where id = p_match_id;
+
+  return 'Spiel zurückgesetzt';
+end;
+$$;
+
+-- ============================================================
 -- Admin-Rechte vergeben (Username anpassen!)
 -- ============================================================
 -- update profiles set is_admin = true where username = 'DeinUsername';
