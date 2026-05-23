@@ -137,7 +137,7 @@ export default function StandingsPage() {
         /* Gruppentabelle */
         <div className="bg-slate-800 rounded-xl overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2rem_2rem_3.5rem_2.5rem_2rem] gap-x-2 px-3 py-2 text-slate-500 text-xs border-b border-slate-700">
+          <div className="grid grid-cols-[1.25rem_1fr_1.75rem_1.75rem_1.75rem_1.75rem_3rem_2rem_2rem] gap-x-1 px-2 py-2 text-slate-500 text-xs border-b border-slate-700">
             <span>#</span>
             <span>Team</span>
             <span className="text-center">Sp</span>
@@ -155,14 +155,14 @@ export default function StandingsPage() {
             standings.map((s, i) => (
               <div
                 key={s.team_id}
-                className={`grid grid-cols-[1.5rem_1fr_2rem_2rem_2rem_2rem_3.5rem_2.5rem_2rem] gap-x-2 px-3 py-2.5 items-center ${rowColor(s.rank)} ${
+                className={`grid grid-cols-[1.25rem_1fr_1.75rem_1.75rem_1.75rem_1.75rem_3rem_2rem_2rem] gap-x-1 px-2 py-2.5 items-center ${rowColor(s.rank)} ${
                   i < standings.length - 1 ? 'border-b border-slate-700/50' : ''
                 }`}
               >
-                <span className="text-sm">{rankBadge(s.rank)}</span>
-                <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-xs">{rankBadge(s.rank)}</span>
+                <div className="flex items-center gap-1 min-w-0">
                   <span className="text-base shrink-0">{s.team_flag}</span>
-                  <span className="text-white text-sm truncate">{s.team_name}</span>
+                  <span className="text-white text-xs font-medium truncate">{s.team_code}</span>
                 </div>
                 <span className="text-center text-slate-400 text-xs">{s.played}</span>
                 <span className="text-center text-slate-400 text-xs">{s.won}</span>
@@ -172,7 +172,7 @@ export default function StandingsPage() {
                 <span className={`text-center text-xs font-medium ${s.goal_diff > 0 ? 'text-green-400' : s.goal_diff < 0 ? 'text-red-400' : 'text-slate-400'}`}>
                   {s.goal_diff > 0 ? '+' : ''}{s.goal_diff}
                 </span>
-                <span className="text-center text-white text-sm font-bold">{s.points}</span>
+                <span className="text-center text-white text-xs font-bold">{s.points}</span>
               </div>
             ))
           )}
