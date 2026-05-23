@@ -56,7 +56,11 @@ export default function LoginPage() {
         options: { data: { username: username.trim() } },
       })
       if (error) {
-        setError(error.message)
+        if (error.message.toLowerCase().includes('duplicate key') || error.message.toLowerCase().includes('unique')) {
+          setError('Dieser Benutzername ist bereits vergeben. Bitte wähle einen anderen.')
+        } else {
+          setError(error.message)
+        }
       } else {
         setInfo('Willkommen! 🎉 Konto erstellt – du wirst gleich weitergeleitet.')
       }
