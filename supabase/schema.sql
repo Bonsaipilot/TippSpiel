@@ -103,6 +103,26 @@ create policy "Teams are public"    on teams   for select using (true);
 create policy "Groups are public"   on groups  for select using (true);
 
 -- ============================================================
+-- Eigenen Tipp löschen (nur vor Spielbeginn möglich)
+-- ============================================================
+create or replace function delete_my_tip(p_match_id int)
+returns void language plpgsql security definer as $$
+begin
+  -- Nur löschen wenn Spiel noch nicht angepfiffen wurde
+  if exists (
+    select 1 from matches
+    where id = p_match_id and kickoff <= now()
+  ) then
+    raise exception 'Tipp kann nach Spielbeginn nicht mehr gelöscht werden.';
+  end if;
+
+  delete from tips
+  where match_id = p_match_id
+    and user_id = auth.uid();
+end;
+$$;
+
+-- ============================================================
 -- Hilfsfunktion: Punkte für einen Tipp berechnen
 -- Aufruf nach Spielende: select calculate_tip_points(tip_id)
 -- Wertung: Ergebnis = 3 Pkt | Tordifferenz = 2 Pkt | Tendenz = 1 Pkt
