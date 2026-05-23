@@ -5,6 +5,72 @@ import Avatar from '../components/Avatar'
 import { AVATARS } from '../lib/avatars'
 import type { Profile } from '../types/database'
 
+const SCORING_EXAMPLES = [
+  {
+    pts: 3,
+    color: 'bg-green-600',
+    label: 'Richtiges Ergebnis',
+    desc: 'Exakt den richtigen Spielstand getippt.',
+    example: 'Spiel endet 2:1 · Tipp war 2:1',
+  },
+  {
+    pts: 2,
+    color: 'bg-blue-600',
+    label: 'Richtige Tordifferenz',
+    desc: 'Tendenz und Tordifferenz stimmen, aber nicht der genaue Stand.',
+    example: 'Spiel endet 3:1 · Tipp war 2:0 (beide Heimsieg mit +2)',
+  },
+  {
+    pts: 1,
+    color: 'bg-yellow-600',
+    label: 'Richtige Tendenz',
+    desc: 'Nur der Sieger (oder Unentschieden) wurde richtig getippt.',
+    example: 'Spiel endet 2:0 · Tipp war 1:0 (beide Heimsieg)',
+  },
+  {
+    pts: 0,
+    color: 'bg-slate-600',
+    label: 'Falsch getippt',
+    desc: 'Tendenz war falsch.',
+    example: 'Spiel endet 2:1 · Tipp war 1:2 (falscher Sieger)',
+  },
+]
+
+function ScoringDialog({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center p-4 pb-24"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/70" />
+      <div
+        className="relative bg-slate-800 rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <p className="text-white font-bold text-base">Wie werden Punkte vergeben?</p>
+          <button onClick={onClose} className="text-slate-400 hover:text-white text-xl leading-none">✕</button>
+        </div>
+        {SCORING_EXAMPLES.map(({ pts, color, label, desc, example }) => (
+          <div key={pts} className="flex gap-3">
+            <span className={`${color} text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0 mt-0.5`}>
+              {pts}
+            </span>
+            <div>
+              <p className="text-white text-sm font-semibold">{label}</p>
+              <p className="text-slate-400 text-xs mt-0.5">{desc}</p>
+              <p className="text-slate-500 text-xs mt-1 italic">{example}</p>
+            </div>
+          </div>
+        ))}
+        <p className="text-slate-600 text-xs pt-1 border-t border-slate-700">
+          Pro Spiel gibt es maximal 3 Punkte. Punkte werden nach dem Abpfiff automatisch vergeben.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 const CATEGORIES = [
   { label: '😄 Smileys',    avatars: AVATARS.slice(0, 30) },
   { label: '🤖 Roboter',    avatars: AVATARS.slice(30, 40) },
@@ -17,6 +83,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [savingAvatar, setSavingAvatar] = useState(false)
+  const [showScoring, setShowScoring] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -91,7 +158,16 @@ export default function ProfilePage() {
 
       {/* Punktewertung */}
       <div className="bg-slate-800 rounded-xl p-4 space-y-2">
-        <p className="text-slate-400 text-sm font-semibold mb-3">Punktewertung</p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-slate-400 text-sm font-semibold">Punktewertung</p>
+          <button
+            onClick={() => setShowScoring(true)}
+            className="text-slate-500 hover:text-slate-300 transition-colors text-base leading-none"
+            title="Erklärung anzeigen"
+          >
+            ℹ
+          </button>
+        </div>
         {[
           ['Richtiges Ergebnis', '3 Pkt'],
           ['Richtige Tordifferenz', '2 Pkt'],
@@ -103,6 +179,7 @@ export default function ProfilePage() {
           </div>
         ))}
       </div>
+      {showScoring && <ScoringDialog onClose={() => setShowScoring(false)} />}
 
       <button
         onClick={signOut}
