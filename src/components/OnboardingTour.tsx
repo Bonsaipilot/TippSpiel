@@ -28,7 +28,7 @@ const STEPS: { tabIndex: number; route: string; icon: string; title: string; tex
     route: '/profil',
     icon: '👤',
     title: 'Profil',
-    text: 'Such dir zuerst ein Profilbild aus – und dann ab zu den Tipps.',
+    text: 'Hier siehst du deine Gesamtpunkte und kannst die Punktebewertung nachschlagen.',
   },
   {
     tabIndex: 3,
