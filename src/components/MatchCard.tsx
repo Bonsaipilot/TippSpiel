@@ -88,6 +88,14 @@ export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved
     if (v.length === 1) onAwayDone?.()
   }
 
+  const randomTip = () => {
+    const h = Math.floor(Math.random() * 5)
+    const a = Math.floor(Math.random() * 5)
+    setHome(h.toString())
+    setAway(a.toString())
+    setSaved(false)
+  }
+
   const revertTip = async () => {
     setSaving(true)
     const { error } = await supabase.rpc('delete_my_tip', { p_match_id: match.id })
@@ -181,7 +189,15 @@ export default function MatchCard({ match, tip, userId, onTipDeleted, onTipSaved
         <div className="space-y-1">
           {error && <p className="text-red-400 text-xs text-center">{error}</p>}
           <div className="flex items-center gap-2">
-            <div className="flex-1 text-xs">
+            <button
+              onClick={randomTip}
+              disabled={saving}
+              title="Zufallstipp"
+              className="px-3 py-1.5 rounded-lg text-sm bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-400 hover:enabled:bg-slate-600 hover:enabled:text-white transition-colors"
+            >
+              🎲
+            </button>
+            <div className="flex-1 text-xs text-center">
               {saving
                 ? <span className="text-slate-400">Speichere…</span>
                 : saved
