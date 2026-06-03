@@ -10,14 +10,29 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase
-      .from('profiles')
-      .select('*, champion_team:champion_team_id(id,name,flag,code)')
-      .order('total_points', { ascending: false })
-      .then(({ data }) => {
-        if (data) setProfiles(data as Profile[])
-        setLoading(false)
-      })
+    Promise.all([
+      supabase
+        .from('profiles')
+        .select('*, champion_team:champion_team_id(id,name,flag,code)'),
+      supabase
+        .from('matches')
+        .select('kickoff')
+        .order('kickoff')
+        .limit(1)
+        .single(),
+    ]).then(([profileRes, matchRes]) => {
+      if (profileRes.data) {
+        const firstKickoff = matchRes.data?.kickoff ?? null
+        const started = firstKickoff ? new Date(firstKickoff) <= new Date() : false
+        const sorted = [...profileRes.data].sort((a, b) => {
+          if (!started) return (a.username ?? '').localeCompare(b.username ?? '', 'de')
+          if (b.total_points !== a.total_points) return b.total_points - a.total_points
+          return (a.username ?? '').localeCompare(b.username ?? '', 'de')
+        })
+        setProfiles(sorted as Profile[])
+      }
+      setLoading(false)
+    })
   }, [])
 
   const medalFor = (rank: number) => {
