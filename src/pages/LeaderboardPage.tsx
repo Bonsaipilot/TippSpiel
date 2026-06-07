@@ -9,30 +9,24 @@ export default function LeaderboardPage() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
 
+
   useEffect(() => {
-    Promise.all([
-      supabase
-        .from('profiles')
-        .select('*, champion_team:champion_team_id(id,name,flag,code)'),
-      supabase
-        .from('matches')
-        .select('kickoff')
-        .order('kickoff')
-        .limit(1)
-        .single(),
-    ]).then(([profileRes, matchRes]) => {
-      if (profileRes.data) {
-        const firstKickoff = matchRes.data?.kickoff ?? null
-        const started = firstKickoff ? new Date(firstKickoff) <= new Date() : false
-        const sorted = [...profileRes.data].sort((a, b) => {
-          if (!started) return (a.username ?? '').localeCompare(b.username ?? '', 'de')
-          if (b.total_points !== a.total_points) return b.total_points - a.total_points
-          return (a.username ?? '').localeCompare(b.username ?? '', 'de')
-        })
-        setProfiles(sorted as Profile[])
-      }
-      setLoading(false)
-    })
+    supabase
+      .from('profiles')
+      .select('*, champion_team:champion_team_id(id,name,flag,code)')
+      .then(({ data }) => {
+        if (data) {
+          const anyPoints = data.some(p => (p.total_points ?? 0) > 0)
+          const sorted = [...data].sort((a, b) => {
+            if (!anyPoints) return (a.username ?? '').localeCompare(b.username ?? '', 'de')
+            const diff = (b.total_points ?? 0) - (a.total_points ?? 0)
+            if (diff !== 0) return diff
+            return (a.username ?? '').localeCompare(b.username ?? '', 'de')
+          })
+          setProfiles(sorted as Profile[])
+        }
+        setLoading(false)
+      })
   }, [])
 
   const medalFor = (rank: number) => {
