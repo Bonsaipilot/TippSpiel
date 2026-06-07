@@ -12,7 +12,7 @@ const WC_END   = new Date('2026-07-20')
 
 // Unsere DB-Codes → football-data.org tla (wo sie abweichen)
 const CODE_MAP: Record<string, string> = {
-  TTO: 'TRI',  // Trinidad & Tobago
+  // Einträge hinzufügen falls football-data.org andere TLAs verwendet
 }
 
 function toApiCode(dbCode: string): string {
