@@ -220,6 +220,12 @@ export default function TipsPage() {
     return acc
   }, {})
 
+  const SECTION_ORDER = [
+    'Gruppe A','Gruppe B','Gruppe C','Gruppe D','Gruppe E','Gruppe F',
+    'Gruppe G','Gruppe H','Gruppe I','Gruppe J','Gruppe K','Gruppe L',
+    'Runde der 32','Achtelfinale','Viertelfinale','Halbfinale','Finale',
+  ]
+
   const tipMap = Object.fromEntries(tips.map(t => [t.match_id, t]))
   const q = query.trim().toLowerCase()
 
@@ -233,7 +239,7 @@ export default function TipsPage() {
 
   return (
     <div className="px-4 py-4 space-y-2">
-      {Object.entries(grouped).map(([group, groupMatches]) => {
+      {Object.entries(grouped).sort(([a], [b]) => SECTION_ORDER.indexOf(a) - SECTION_ORDER.indexOf(b)).map(([group, groupMatches]) => {
         const filtered = groupMatches.filter(matchesQuery)
         if (filtered.length === 0) return null
         const isOpen = q ? true : open === group
