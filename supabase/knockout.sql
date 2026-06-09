@@ -213,8 +213,11 @@ insert into matches (home_team_id, away_team_id, kickoff, stage, venue) values
   (null, null, '2026-07-05 00:00+00', 'r32', 'BC Place, Vancouver'),
   (null, null, '2026-07-05 03:00+00', 'r32', 'Q2 Stadium, Austin');
 
--- Bracket-Regeln für R32 (Sieger Gruppe X vs Zweiter Gruppe Y)
--- Vorlage – bitte gegen offizielles FIFA-Bracket prüfen!
+-- Bracket-Regeln für R32 (Quelle: Wikipedia / FIFA 2026 Knockout Stage)
+-- Reihenfolge entspricht Anstoßreihenfolge (Match 73–88).
+-- 3-1 bis 3-8: die 8 besten Drittplatzierten nach Punkten/Tordifferenz.
+-- Hinweis: Die genaue Zuordnung der Drittplatzierten zu den Slots hängt
+-- davon ab, aus welchen Gruppen sie stammen (495 FIFA-Szenarien, Annex C).
 insert into bracket_rules (match_id, home_label, away_label)
 select m.id, r.home_label, r.away_label
 from (
@@ -222,22 +225,22 @@ from (
   from matches where stage = 'r32'
 ) m
 join (values
-  (1,  '1A', '2G'),
-  (2,  '1B', '2H'),
-  (3,  '1C', '2I'),
-  (4,  '1D', '2J'),
-  (5,  '1E', '2K'),
-  (6,  '1F', '2L'),
-  (7,  '1G', '2A'),
-  (8,  '1H', '2B'),
-  (9,  '1I', '3-1'),
-  (10, '1J', '3-2'),
-  (11, '1K', '3-3'),
-  (12, '1L', '3-4'),
-  (13, '2C', '3-5'),
-  (14, '2D', '3-6'),
-  (15, '2E', '3-7'),
-  (16, '2F', '3-8')
+  (1,  '2A', '2B'),   -- Match 73: 2. Gr.A  vs 2. Gr.B
+  (2,  '1E', '3-1'),  -- Match 74: 1. Gr.E  vs 3. (aus A/B/C/D/F)
+  (3,  '1F', '2C'),   -- Match 75: 1. Gr.F  vs 2. Gr.C
+  (4,  '1C', '2F'),   -- Match 76: 1. Gr.C  vs 2. Gr.F
+  (5,  '1I', '3-2'),  -- Match 77: 1. Gr.I  vs 3. (aus C/D/F/G/H)
+  (6,  '2E', '2I'),   -- Match 78: 2. Gr.E  vs 2. Gr.I
+  (7,  '1A', '3-3'),  -- Match 79: 1. Gr.A  vs 3. (aus C/E/F/H/I)
+  (8,  '1L', '3-4'),  -- Match 80: 1. Gr.L  vs 3. (aus E/H/I/J/K)
+  (9,  '1D', '3-5'),  -- Match 81: 1. Gr.D  vs 3. (aus B/E/F/I/J)
+  (10, '1G', '3-6'),  -- Match 82: 1. Gr.G  vs 3. (aus A/E/H/I/J)
+  (11, '2K', '2L'),   -- Match 83: 2. Gr.K  vs 2. Gr.L
+  (12, '1H', '2J'),   -- Match 84: 1. Gr.H  vs 2. Gr.J
+  (13, '1B', '3-7'),  -- Match 85: 1. Gr.B  vs 3. (aus E/F/G/I/J)
+  (14, '1J', '2H'),   -- Match 86: 1. Gr.J  vs 2. Gr.H
+  (15, '1K', '3-8'),  -- Match 87: 1. Gr.K  vs 3. (aus D/E/I/J/L)
+  (16, '2D', '2G')    -- Match 88: 2. Gr.D  vs 2. Gr.G
 ) as r(rn, home_label, away_label) on m.rn = r.rn
 on conflict (match_id) do nothing;
 
