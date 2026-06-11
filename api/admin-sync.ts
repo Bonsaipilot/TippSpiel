@@ -58,6 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let updated = 0
     const unmatched: string[] = []
+    const apiTotal = apiMatches.length
 
     for (const m of apiMatches) {
       const homeScore = m.score?.fullTime?.home
@@ -104,7 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    return res.status(200).json({ updated, skipped: unmatched.length, unmatched })
+    return res.status(200).json({ updated, skipped: unmatched.length, unmatched, apiTotal, dbOpen: dbMatches.length })
   } catch (err) {
     console.error('[admin-sync]', err)
     return res.status(500).json({ error: String(err) })

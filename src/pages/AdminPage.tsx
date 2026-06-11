@@ -38,8 +38,10 @@ function SyncSection() {
     })
     const json = await res.json()
     if (!res.ok) setMsg('Fehler: ' + (json.error ?? res.status))
-    else if (json.updated === 0) setMsg('Keine neuen Ergebnisse gefunden.')
-    else setMsg(`✓ ${json.updated} Spiel${json.updated !== 1 ? 'e' : ''} aktualisiert${json.skipped ? ` · ${json.skipped} nicht zugeordnet` : ''}`)
+    else if (json.updated === 0) setMsg(
+      `Keine neuen Ergebnisse. API: ${json.apiTotal ?? '?'} beendete Spiele · DB: ${json.dbOpen ?? '?'} offen${json.skipped ? ` · ${json.skipped} nicht zugeordnet: ${json.unmatched?.join(', ')}` : ''}`
+    )
+    else setMsg(`✓ ${json.updated} Spiel${json.updated !== 1 ? 'e' : ''} aktualisiert${json.skipped ? ` · ${json.skipped} nicht zugeordnet: ${json.unmatched?.join(', ')}` : ''}`)
     setLoading(false)
   }
 
