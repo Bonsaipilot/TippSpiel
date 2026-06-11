@@ -71,7 +71,7 @@ function AppShell() {
 }
 
 function AppRoutes() {
-  const { session, loading } = useAuth()
+  const { session, loading, isRecovery } = useAuth()
 
   if (loading) {
     return (
@@ -85,11 +85,11 @@ function AppRoutes() {
     <Routes>
       <Route
         path="/login"
-        element={session ? <Navigate to="/tipps" replace /> : <LoginPage />}
+        element={session && !isRecovery ? <Navigate to="/tipps" replace /> : <LoginPage />}
       />
       <Route
         path="/*"
-        element={session ? <AppShell /> : <Navigate to="/login" replace />}
+        element={session && !isRecovery ? <AppShell /> : <Navigate to="/login" replace />}
       />
     </Routes>
   )
