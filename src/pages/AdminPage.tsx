@@ -24,6 +24,42 @@ function formatLabel(label: string) {
   return label
 }
 
+// ─── Ergebnis-Sync ───────────────────────────────────────────
+function SyncSection() {
+  const [loading, setLoading] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+
+  const sync = async () => {
+    setLoading(true); setMsg(null)
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/admin-sync', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+    })
+    const json = await res.json()
+    if (!res.ok) setMsg('Fehler: ' + (json.error ?? res.status))
+    else if (json.updated === 0) setMsg('Keine neuen Ergebnisse gefunden.')
+    else setMsg(`✓ ${json.updated} Spiel${json.updated !== 1 ? 'e' : ''} aktualisiert${json.skipped ? ` · ${json.skipped} nicht zugeordnet` : ''}`)
+    setLoading(false)
+  }
+
+  return (
+    <div className="bg-slate-800 rounded-xl p-4 space-y-3">
+      <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Ergebnisse synchronisieren</p>
+      <p className="text-slate-500 text-xs">Ruft football-data.org ab und trägt alle abgeschlossenen Spiele ein.</p>
+      {msg && (
+        <p className={`text-xs px-3 py-1.5 rounded-lg ${msg.startsWith('✓') ? 'text-green-400 bg-green-950/40' : 'text-red-400 bg-red-950/40'}`}>
+          {msg}
+        </p>
+      )}
+      <button onClick={sync} disabled={loading}
+        className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 rounded-lg transition-colors">
+        {loading ? 'Synchronisiere…' : '🔄 Jetzt synchronisieren'}
+      </button>
+    </div>
+  )
+}
+
 // ─── Einladungslink ───────────────────────────────────────────
 function InviteSection() {
   const [code, setCode] = useState<string | null>(null)
@@ -426,6 +462,7 @@ export default function AdminPage() {
 
   return (
     <div className="px-4 py-4 space-y-4">
+      <SyncSection />
       <InviteSection />
       <ChampionSection teams={teams} />
       {KO_ROUNDS.map(r => {
